@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum Role {
+  TEACHER
+  ADMIN
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Student {
+  id        Int       @id @default(autoincrement())
+  name      String
+  prn       String    @unique
+  password String
+  collegeId Int
+  classId   Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  College   College   @relation(fields: [collegeId], references: [id])
+  Class     Class     @relation(fields: [classId], references: [id])
+  ExamMarks ExamMark[]
+  @@index([collegeId])
+  @@index([classId])
+}
+
+model Class {
+  id         Int       @id @default(autoincrement())
+  year       Int       // 1, 2, 3, 4, etc.
+  division   String    // 'A', 'B', 'C', etc.
+  department String    // 'Computer Science', 'Mechanical', etc.
+  students   Student[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  @@index([year, division, department])
+}
+
+model College {
+  id        Int       @id @default(autoincrement())
+  name      String
+  students  Student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Subject {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  ExamMarks ExamMark[]
+}
+
+model ExamMark {
+  id          Int       @id @default(autoincrement())
+  studentId   Int
+  subjectId   Int
+  totalMark   Int
+  obtainedMark Int
+  examDate    DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Student     Student   @relation(fields: [studentId], references: [id])
+  Subject     Subject   @relation(fields: [subjectId], references: [id])
+  @@index([studentId])
+  @@index([subjectId])
+}
