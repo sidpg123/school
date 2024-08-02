@@ -1,11 +1,9 @@
-import Image from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+import { Button } from "@repo/ui/components/ui/button";
 
-export default function Home() {
+export default function Page() {
   return (
-<div className="border-sky-300 p-11">
-    hello
-</div>
+    <main>
+      <Button>Click me</Button>
+    </main>
   );
 }
