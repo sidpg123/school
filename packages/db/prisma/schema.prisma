@@ -33,7 +33,7 @@ model Student {
   id        Int       @id @default(autoincrement())
   name      String
   prn       String    @unique
-  password String
+  password  String
   collegeId Int
   classId   Int
   createdAt DateTime  @default(now())

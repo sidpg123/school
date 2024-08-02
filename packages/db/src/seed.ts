@@ -46,8 +46,8 @@ async function main() {
       Array.from({ length: 10 }, async () => ({
         name: faker.person.fullName(),
         prn: faker.number.int({ min: 2223000000, max: 2223999999 }).toString(),
-        collegeId: faker.helpers.arrayElement([1, 2]),
-        classId: faker.helpers.arrayElement([1, 2, 3]),
+        collegeId: faker.helpers.arrayElement([15, 16]),
+        classId: faker.helpers.arrayElement([22, 23, 24]),
         password: await bcrypt.hash('demo123', 10), // Hash the password
       })),
     ),
