@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,76 +7,111 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-enum Role {
-  TEACHER
-  ADMIN
-}
-
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         Int          @id @default(autoincrement())
+  name       String
+  email      String       @unique
+  password   String
+  role       Role
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Attendance Attendance[]
 }
 
 model Student {
-  id        Int       @id @default(autoincrement())
-  name      String
-  prn       String    @unique
-  password  String
-  collegeId Int
-  classId   Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  College   College   @relation(fields: [collegeId], references: [id])
-  Class     Class     @relation(fields: [classId], references: [id])
-  ExamMarks ExamMark[]
+  id         Int          @id @default(autoincrement())
+  name       String
+  prn        String       @unique
+  collegeId  Int
+  classId    Int
+  createdAt  DateTime     @default(now())
+  password   String
+  updatedAt  DateTime     @updatedAt
+  rollNo     Int          @default(0)
+  Attendance Attendance[]
+  ExamMarks  ExamMark[]
+  Class      Class        @relation(fields: [classId], references: [id])
+  College    College      @relation(fields: [collegeId], references: [id])
+
   @@index([collegeId])
   @@index([classId])
 }
 
 model Class {
-  id         Int       @id @default(autoincrement())
-  year       Int       // 1, 2, 3, 4, etc.
-  division   String    // 'A', 'B', 'C', etc.
-  department String    // 'Computer Science', 'Mechanical', etc.
-  students   Student[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  @@index([year, division, department])
+  id           Int        @id @default(autoincrement())
+  year         Int
+  division     String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  collegeId    Int
+  departmentId Int        @default(0)
+  College      College    @relation(fields: [collegeId], references: [id])
+  Department   Department @relation(fields: [departmentId], references: [id])
+  students     Student[]
+
+  @@index([year, division, departmentId])
 }
 
 model College {
-  id        Int       @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Attendance Attendance[]
+  classes    Class[]
+  students   Student[]
+}
+
+model Department {
+  id        Int      @id @default(autoincrement())
   name      String
-  students  Student[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  classes   Class[]
 }
 
 model Subject {
-  id        Int       @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   ExamMarks ExamMark[]
 }
 
 model ExamMark {
-  id          Int       @id @default(autoincrement())
-  studentId   Int
-  subjectId   Int
-  totalMark   Int
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  subjectId    Int
+  totalMark    Int
   obtainedMark Int
-  examDate    DateTime
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  Student     Student   @relation(fields: [studentId], references: [id])
-  Subject     Subject   @relation(fields: [subjectId], references: [id])
+  examDate     DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Student      Student  @relation(fields: [studentId], references: [id])
+  Subject      Subject  @relation(fields: [subjectId], references: [id])
+
   @@index([studentId])
   @@index([subjectId])
+}
+
+model Attendance {
+  date      DateTime
+  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  updatedAt DateTime @updatedAt
+  userId    Int
+  status    Boolean
+  collegeId Int
+  College   College  @relation(fields: [collegeId], references: [id])
+  Student   Student  @relation(fields: [studentId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@index([studentId])
+  @@index([collegeId])
+}
+
+enum Role {
+  TEACHER
+  ADMIN
 }

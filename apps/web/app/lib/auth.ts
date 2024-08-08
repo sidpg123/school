@@ -46,23 +46,26 @@ export const authOptions: NextAuthOptions = {
     ],
     secret: process.env.JWT_SECRET || "secret",
     callbacks: {
-        async session({ session, token }) {
-            if (session.user) {
-                console.log('session', session)
-                console.log('token',token)
-                session.user.id = token.sub as string;
-                console.log(session.user);
-                
-                // session.user.id = token.sub as string; // Ensure `token.sub` is a string
-            }
-            return session;
-        },
         async jwt({ token, user }) {
             if (user) {
                 token.sub = user.id;
             }
+            // console.log('toekn0', token);
+            
             return token;
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                // console.log('sessionn', session)
+                //console.log('token',token)
+                session.user.id = token.sub as string;
+            //    console.log("session after userid",session.user);
+                
+                // session.user.id = token.sub as string; // Ensure `token.sub` is a string
+            }
+            return session;
         }
+        
     },
     pages: {
         

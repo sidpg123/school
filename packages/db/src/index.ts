@@ -11,7 +11,7 @@ declare global {
 const prisma = globalThis.prisma ?? prismaClientSingleton();
 async () => {
   await prisma.$connect()
-  console.log("connected to db");
+  // console.log("connected to db");
   
 }
 export default prisma;
